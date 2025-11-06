@@ -1,0 +1,21 @@
+
+seed: 2025
+n_train: 2000
+n_val: 300
+n_test: 300
+
+T_vis_max: 64
+T_ais_max: 24
+
+dt_vis: 1.0
+ais_dt_range: [2.0, 8.0]
+v_range: [2.0, 6.0]
+turn_prob: 0.2
+
+pix_noise_vis: 1.5
+pos_noise_ais: 3.0
+miss_vis_prob: 0.06
+miss_ais_prob: 0.04
+occ_len_range: [2, 6]
+
+dt_enc_omega: 0.5

@@ -1,0 +1,27 @@
+
+seed: 42
+device: "cuda"
+batch_size: 128
+num_workers: 2
+epochs: 40
+lr: 0.0003
+weight_decay: 0.0001
+temperature: 0.07
+
+model:
+  type: "trans_raw"       # 基础输入，不含显式动力学量
+  proj_dim: 64
+  video:
+    in_dim: 5             # [x,y,w,h,c]
+    d_model: 64
+    n_layers: 3
+    n_heads: 4
+    d_ff: 128
+    pooling: "cls"
+  ais:
+    in_dim: 4             # [u,v,s,theta]
+    d_model: 64
+    n_layers: 3
+    n_heads: 4
+    d_ff: 128
+    pooling: "cls"

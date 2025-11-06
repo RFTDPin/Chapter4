@@ -21,15 +21,18 @@ def roc_auc(sim: np.ndarray) -> float:
     Pure NumPy implementation via ranking (equivalent to Mann–Whitney U / AUC).
     """
     N = sim.shape[0]
-    pos = sim[np.arange(N), np.arange(N)].reshape(-1, 1)  # [N,1]
+    # pos = sim[np.arange(N), np.arange(N)].reshape(-1, 1)  # [N,1]
+    pos = sim[np.arange(N), np.arange(N)].reshape(-1)  # [N]
     neg = sim.copy()
     np.fill_diagonal(neg, -np.inf)
-    neg = neg.reshape(-1, 1)
+    # neg = neg.reshape(-1, 1)
+    neg = neg.reshape(-1)
     neg = neg[np.isfinite(neg)]  # remove self-pairs
 
-    scores = np.concatenate([pos, neg], axis=0).reshape(-1)
-    labels = np.concatenate([np.ones_like(pos.reshape(-1)), np.zeros_like(neg.reshape(-1))])
-
+    # scores = np.concatenate([pos, neg], axis=0).reshape(-1)
+    # labels = np.concatenate([np.ones_like(pos.reshape(-1)), np.zeros_like(neg.reshape(-1))])
+    scores = np.concatenate([pos, neg], axis=0)
+    labels = np.concatenate([np.ones_like(pos), np.zeros_like(neg)])
     # Compute ranks (average ties)
     order = np.argsort(scores)
     ranks = np.empty_like(order, dtype=float)

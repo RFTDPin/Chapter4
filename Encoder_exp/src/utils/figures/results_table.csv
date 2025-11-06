@@ -1,0 +1,4 @@
+Model,top1,top5,auc,hungarian_acc,mofa
+TCN+Gating+ATP,0.6933,0.9767,0.9951,0.8267,0.8267
+Transformer-Raw,0.7033,0.9933,0.9974,0.8800,0.8800
+Transformer-Kine,0.7000,0.9867,0.9976,0.8867,0.8867

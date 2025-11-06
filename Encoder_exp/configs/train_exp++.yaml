@@ -1,0 +1,27 @@
+
+seed: 42
+device: "cuda"
+batch_size: 128
+num_workers: 2
+epochs: 80
+lr: 0.0003
+weight_decay: 0.0001
+temperature: 0.07
+
+model:
+  type: "exp"             # exp / trans_raw / trans_kine
+  proj_dim: 64
+  video:
+    in_dim: 10            # [x,y,w,h,c,s,psi,a,dpsi,r]
+    hidden: 64
+    layers: 3
+    dilations: [1,2,4]
+    use_gating: true
+    attn_pool: true
+  ais:
+    in_dim: 8             # [u,v,s,theta,ds,dtheta,sin(dt),cos(dt)]
+    hidden: 64
+    layers: 5
+    dilations: [1,2,4,8,16]
+    use_gating: true
+    attn_pool: true

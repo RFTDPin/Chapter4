@@ -1,0 +1,38 @@
+seed: 42
+device: "cuda"
+batch_size: 128
+num_workers: 2
+epochs: 80
+lr: 0.0003
+weight_decay: 0.0001
+temperature: 0.07
+
+model:
+  type: "hybrid_kine"      # Conv (TCN) + Transformer, with kinematic features
+  proj_dim: 64
+  video:
+    in_dim: 10             # [x,y,w,h,c,s,psi,a,dpsi,r]
+    # TCN frontend
+    front_hidden: 64
+    front_layers: 3
+    front_dilations: [1, 2, 4]
+    use_gating: true
+    # Transformer backend
+    d_model: 64
+    tf_layers: 2
+    n_heads: 4
+    d_ff: 128
+    dropout: 0.1
+    pooling: "mean"        # 推荐mean，避免CLS遮挡的掩码歧义
+  ais:
+    in_dim: 8              # [u,v,s,theta,ds,dtheta,sin(dt),cos(dt)]
+    front_hidden: 64
+    front_layers: 3
+    front_dilations: [1, 2, 4]
+    use_gating: true
+    d_model: 64
+    tf_layers: 2
+    n_heads: 4
+    d_ff: 128
+    dropout: 0.1
+    pooling: "mean"

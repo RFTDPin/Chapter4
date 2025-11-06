@@ -19,8 +19,7 @@ class Logger:
     def info(self, msg: str):
         line = f"[{dt.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {msg}"
         print(line, flush=True)
-        self.log_file.write(line + "
-")
+        self.log_file.write(line + "\n")
         self.log_file.flush()
 
     def add_scalar(self, tag: str, value: float, step: int):

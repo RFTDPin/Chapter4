@@ -19,6 +19,7 @@ class Gating(nn.Module):
         # initialize near-open gates
         nn.init.zeros_(self.gate.weight)
         nn.init.zeros_(self.gate.bias)
+        nn.init.constant_(self.gate.bias,2.0)
 
     def forward(self, x):
         # x: [B, T, D]

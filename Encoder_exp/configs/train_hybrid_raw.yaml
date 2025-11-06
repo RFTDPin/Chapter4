@@ -1,0 +1,36 @@
+seed: 42
+device: "cuda"
+batch_size: 128
+num_workers: 2
+epochs: 80
+lr: 0.0003
+weight_decay: 0.0001
+temperature: 0.07
+
+model:
+  type: "hybrid_raw"       # Conv (TCN) + Transformer, raw features only
+  proj_dim: 64
+  video:
+    in_dim: 5              # [x,y,w,h,c]
+    front_hidden: 64
+    front_layers: 3
+    front_dilations: [1, 2, 4]
+    use_gating: false      # 原始几何量，不做动力学门控
+    d_model: 64
+    tf_layers: 2
+    n_heads: 4
+    d_ff: 128
+    dropout: 0.1
+    pooling: "mean"
+  ais:
+    in_dim: 4              # [u,v,s,theta]
+    front_hidden: 64
+    front_layers: 3
+    front_dilations: [1, 2, 4]
+    use_gating: true       # AIS raw 仍含 s/theta，可门控
+    d_model: 64
+    tf_layers: 2
+    n_heads: 4
+    d_ff: 128
+    dropout: 0.1
+    pooling: "mean"

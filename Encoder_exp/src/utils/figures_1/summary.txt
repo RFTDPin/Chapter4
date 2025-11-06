@@ -1,0 +1,6 @@
+• 主结论：在 TOP1 指标上，**TCN++** 取得最高分 0.740。
+• 相比基线 **Transformer-Raw**（0.703），提升 **5.21%**。
+• 在 top5 上最优为 **Transformer-Raw**（0.993），但 **TCN++** 仍保持竞争力。
+• 在 auc 上最优为 **Transformer-Kine**（0.998），但 **TCN++** 仍保持竞争力。
+• 在 hungarian_acc 上同样领先，数值为 0.917。
+• 在 mofa 上同样领先，数值为 0.917。

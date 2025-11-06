@@ -13,6 +13,8 @@ from src.utils.seed import set_seed
 from src.utils.logger import Logger
 from src.utils.common import save_checkpoint, cosine_similarity_matrix, tensor_to_numpy
 from src.utils.metrics import topk_accuracy
+# 在导入部分添加
+from torch.optim.lr_scheduler import CosineAnnealingLR, SequentialLR
 
 def load_yaml(path: str) -> dict:
     with open(path, "r", encoding="utf-8") as f:
@@ -70,8 +72,8 @@ def train_one_epoch(model, loader, optimizer, criterion, device):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, required=True)
-    parser.add_argument("--data", type=str, required=True)
+    parser.add_argument("--config",required= True, type=str)
+    parser.add_argument("--data",required= True, type=str)
     parser.add_argument("--workdir", type=str, default="runs/exp")
     args = parser.parse_args()
 

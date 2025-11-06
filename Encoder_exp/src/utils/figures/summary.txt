@@ -1,0 +1,5 @@
+• 主结论：在 TOP1 指标上，**Transformer-Raw** 取得最高分 0.703。
+• 在 top5 上同样领先，数值为 0.993。
+• 在 auc 上最优为 **Transformer-Kine**（0.998），但 **Transformer-Raw** 仍保持竞争力。
+• 在 hungarian_acc 上最优为 **Transformer-Kine**（0.887），但 **Transformer-Raw** 仍保持竞争力。
+• 在 mofa 上最优为 **Transformer-Kine**（0.887），但 **Transformer-Raw** 仍保持竞争力。

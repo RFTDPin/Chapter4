@@ -1,10 +1,11 @@
 
-from typing import Dict
 import torch.nn as nn
+from typing import Dict
 
 from .tcn_encoder import KinematicTCNEncoder
 from .transformer_encoder import TransformerSeqEncoder
 from .projection import ProjectionHead
+from .hybrid_encoder import HybridSeqEncoder
 
 
 class DualEncoder(nn.Module):
@@ -24,21 +25,10 @@ class DualEncoder(nn.Module):
 
 
 def build_dual_encoder(cfg: Dict) -> nn.Module:
-    """
-    cfg:
-      type: 'exp' | 'trans_raw' | 'trans_kine'
-      proj_dim: int
-      video: {in_dim, hidden/layers/dilations or d_model/n_layers/n_heads/d_ff}
-      ais:   {in_dim, ...}
-    """
     model_type = cfg["type"]
     proj_dim = cfg.get("proj_dim", 64)
 
     if model_type == "exp":
-        # Indices for kinematic gating (video: s, psi, a, dpsi, r -> indices 5..9; ais: speed/heading etc. -> 2..5)
-        v_gate_idx = list(range(5, 10))  # on video features [s,psi,a,dpsi,r]
-        a_gate_idx = list(range(2, 6))   # on ais features [s,theta,ds,dtheta]
-
         vconf = cfg["video"]; aconf = cfg["ais"]
         v_enc = KinematicTCNEncoder(
             in_dim=vconf["in_dim"],
@@ -47,7 +37,7 @@ def build_dual_encoder(cfg: Dict) -> nn.Module:
             dilations=tuple(vconf.get("dilations", [1,2,4])),
             use_gating=vconf.get("use_gating", True),
             attn_pool=vconf.get("attn_pool", True),
-            gate_idx=v_gate_idx if vconf["in_dim"] >= 10 else []
+            gate_idx=list(range(5,10)) if vconf["in_dim"] >= 10 else []
         )
         a_enc = KinematicTCNEncoder(
             in_dim=aconf["in_dim"],
@@ -56,7 +46,7 @@ def build_dual_encoder(cfg: Dict) -> nn.Module:
             dilations=tuple(aconf.get("dilations", [1,2,4])),
             use_gating=aconf.get("use_gating", True),
             attn_pool=aconf.get("attn_pool", True),
-            gate_idx=a_gate_idx if aconf["in_dim"] >= 6 else []
+            gate_idx=list(range(2,6)) if aconf["in_dim"] >= 6 else []
         )
         z_dim = vconf.get("hidden", 64)
 
@@ -82,8 +72,41 @@ def build_dual_encoder(cfg: Dict) -> nn.Module:
         )
         z_dim = vconf.get("d_model", 64)
 
+    elif model_type in ["hybrid_kine", "hybrid_raw"]:
+        vconf = cfg["video"]; aconf = cfg["ais"]
+        v_gate_idx = list(range(5, 10)) if vconf["in_dim"] >= 10 else []
+        a_gate_idx = list(range(2, 6))  if aconf["in_dim"] >= 6  else []
+        v_enc = HybridSeqEncoder(
+            in_dim=vconf["in_dim"],
+            front_hidden=vconf.get("front_hidden", 64),
+            front_layers=vconf.get("front_layers", 2),
+            front_dilations=tuple(vconf.get("front_dilations", [1,2])),
+            use_gating=vconf.get("use_gating", True),
+            gate_idx=v_gate_idx,
+            d_model=vconf.get("d_model", 64),
+            tf_layers=vconf.get("tf_layers", 2),
+            n_heads=vconf.get("n_heads", 4),
+            d_ff=vconf.get("d_ff", 128),
+            dropout=vconf.get("dropout", 0.1),
+            pooling=vconf.get("pooling", "mean"),
+        )
+        a_enc = HybridSeqEncoder(
+            in_dim=aconf["in_dim"],
+            front_hidden=aconf.get("front_hidden", 64),
+            front_layers=aconf.get("front_layers", 2),
+            front_dilations=tuple(aconf.get("front_dilations", [1,2])),
+            use_gating=aconf.get("use_gating", True),
+            gate_idx=a_gate_idx,
+            d_model=aconf.get("d_model", 64),
+            tf_layers=aconf.get("tf_layers", 2),
+            n_heads=aconf.get("n_heads", 4),
+            d_ff=aconf.get("d_ff", 128),
+            dropout=aconf.get("dropout", 0.1),
+            pooling=aconf.get("pooling", "mean"),
+        )
+        z_dim = vconf.get("d_model", 64)
+
     else:
         raise ValueError(f"Unknown model type: {model_type}")
 
-    model = DualEncoder(v_enc, a_enc, proj_dim=proj_dim, z_dim=z_dim)
-    return model
+    return DualEncoder(v_enc, a_enc, proj_dim=proj_dim, z_dim=z_dim)

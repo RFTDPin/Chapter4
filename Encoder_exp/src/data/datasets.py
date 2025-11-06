@@ -46,7 +46,7 @@ class ContrastivePairsDataset(Dataset):
     """
     从 .npz 中读取配对样本（正样本对：同一船舶的 video/AIS 轨迹）。
     __getitem__ 返回一个字典：
-      {
+n      {
         'vis_seq':  FloatTensor [T_vis, D_vis],
         'vis_mask': BoolTensor  [T_vis],
         'ais_seq':  FloatTensor [T_ais, D_ais],
@@ -69,10 +69,17 @@ class ContrastivePairsDataset(Dataset):
         self.split = split
         self.variant = feature_variant
         self.return_pos = return_pos
+        self.mmap_mode = mmap_mode
 
-        # 直接内存映射，避免一次性加载全部数据
-        self.store = np.load(self.path, allow_pickle=False, mmap_mode=mmap_mode)
-        prefix = split + "_"
+        self._load_arrays()
+
+    def _load_arrays(self) -> None:
+        """加载 .npz 中的数组。"""
+        self.store = np.load(self.path, allow_pickle=False, mmap_mode=self.mmap_mode)
+        prefix = self.split + "_"
+        # # 直接内存映射，避免一次性加载全部数据
+        # self.store = np.load(self.path, allow_pickle=False, mmap_mode=mmap_mode)
+        # prefix = split + "_"
 
         # 必需字段
         self.vis_seq = self.store[prefix + "vis_seq"]   # [N, T_vis, D_vis_full]
@@ -92,6 +99,17 @@ class ContrastivePairsDataset(Dataset):
         # 记录时长
         self.T_vis = self.vis_seq.shape[1]
         self.T_ais = self.ais_seq.shape[1]
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        # np.load 返回的 NpzFile 内部持有无法被 pickle 的文件句柄，
+        # 需要在 worker 进程中重新打开
+        state['store'] = None
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._load_arrays()
 
     def __len__(self) -> int:
         return int(self.ids.shape[0])

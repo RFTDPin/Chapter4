@@ -1,0 +1,6 @@
+• 主结论：在 TOP1 指标上，**Transformer-Kinepro** 取得最高分 0.747。
+• 相比基线 **Transformer-Raw**（0.703），提升 **6.16%**。
+• 在 top5 上最优为 **Transformer-Raw**（0.993），但 **Transformer-Kinepro** 仍保持竞争力。
+• 在 auc 上同样领先，数值为 0.998。
+• 在 hungarian_acc 上最优为 **TCN++**（0.917），但 **Transformer-Kinepro** 仍保持竞争力。
+• 在 mofa 上最优为 **TCN++**（0.917），但 **Transformer-Kinepro** 仍保持竞争力。

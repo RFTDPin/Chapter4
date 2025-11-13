@@ -1,0 +1,1 @@
+{"frame_id": 0, "timestamp": 0.0, "mmsi": 123456789, "u": 960.0, "v": 540.0, "sigma_r": 8.0, "speed": 12.3, "course": 45.0, "confidence": 0.9, "source": "ais_alignment"}

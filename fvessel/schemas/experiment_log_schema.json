@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OnlineExperimentLog",
+  "type": "object",
+  "required": [
+    "frame_id",
+    "timestamp",
+    "num_candidates",
+    "similarity_evals",
+    "state",
+    "roi_triggers",
+    "latency_ms"
+  ],
+  "properties": {
+    "frame_id": {"type": "integer"},
+    "timestamp": {"type": "number"},
+    "num_candidates": {"type": "integer", "minimum": 0},
+    "similarity_evals": {"type": "integer", "minimum": 0},
+    "state": {"type": "string", "enum": ["NORMAL", "SOFT_MASK", "ROI", "GIVE_UP"]},
+    "roi_triggers": {"type": "integer", "minimum": 0},
+    "latency_ms": {"type": "number", "minimum": 0},
+    "notes": {"type": "string"}
+  }
+}
